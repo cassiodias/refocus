@@ -173,7 +173,28 @@ function start(clusterProcessId = 0) { // eslint-disable-line max-statements
       next();
     });
 
-    app.use('/static', express.static(path.join(__dirname, 'public')));
+      // app.use('/static', express.static(path.join(__dirname, 'public')));
+
+      function etag(path, stat) {
+          return '"cdc--' + Math.ceil(+stat.mtime / 1000).toString(16) + '-' + Number(stat.size).toString(16) + '"';
+      }
+
+      var optionsForStaticFolder = {
+          etag: true,
+          setHeaders: function (res, path, stat) {
+              console.log('Actual path: {}', path);
+              if (path.includes('rooms/app.js')) {
+                  res.set('x-timestamp', Date.now());
+                  res.set('ETag', etag(path, stat));
+
+                  // give me the latest copy unless I already have the latest copy.
+                  res.set('Cache-Control', 'public, max-age=0');
+              }
+          },
+      };
+
+      app.set('etag', 'strong');
+      app.use('/static', express.static(path.join(__dirname, 'public'), optionsForStaticFolder));
 
     // Set the X-XSS-Protection HTTP header as a basic protection against XSS
     app.use(helmet.xssFilter());
