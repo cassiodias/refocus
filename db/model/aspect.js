@@ -149,6 +149,10 @@ module.exports = function aspect(seq, dataTypes) {
           foreignKey: 'aspectId',
         });
 
+        Aspect.addScope('baseScope', {
+          order: ['Aspect.name'],
+        });
+
         Aspect.addScope('defaultScope', {
           include: [
             {
@@ -160,6 +164,27 @@ module.exports = function aspect(seq, dataTypes) {
         }, {
           override: true,
         });
+
+        Aspect.addScope('user', {
+          include: [
+            {
+              association: assoc.user,
+              attributes: ['name', 'email', 'fullName'],
+            },
+          ],
+        });
+
+        Aspect.addScope('forRealTime', (value) => ({
+          where: {
+            name: { $iLike: value },
+          },
+          include: [
+            {
+              association: assoc.user,
+              attributes: ['name', 'email', 'fullName'],
+            },
+          ],
+        }));
       },
     },
     hooks: {

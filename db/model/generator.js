@@ -68,6 +68,14 @@ module.exports = function generator(seq, dataTypes) {
       primaryKey: true,
       defaultValue: dataTypes.UUIDV4,
     },
+    intervalSecs: {
+      type: dataTypes.INTEGER,
+      defaultValue: 60,
+      validate: {
+        isInt: true,
+        min: 1,
+      },
+    },
     isDeleted: {
       type: dataTypes.BIGINT,
       defaultValue: 0,
@@ -87,6 +95,11 @@ module.exports = function generator(seq, dataTypes) {
     },
     subjectQuery: {
       type: dataTypes.STRING,
+      validate: {
+        validateSQ(value) {
+          sgUtils.validateSubjectQuery(value);
+        },
+      },
     },
     subjects: {
       type: dataTypes.ARRAY(dataTypes.STRING(constants.fieldlen.normalName)),
@@ -121,6 +134,13 @@ module.exports = function generator(seq, dataTypes) {
       type: dataTypes.JSON,
       allowNull: true,
     },
+    currentCollector: {
+      type: dataTypes.STRING(constants.fieldlen.normalName),
+      allowNull: true,
+      validate: {
+        is: constants.nameRegex,
+      },
+    },
   }, {
     classMethods: {
       getGeneratorAssociations() {
@@ -149,6 +169,10 @@ module.exports = function generator(seq, dataTypes) {
           foreignKey: 'generatorId',
         });
 
+        Generator.addScope('baseScope', {
+          order: ['name'],
+        });
+
         Generator.addScope('defaultScope', {
           include: [
             {
@@ -171,6 +195,32 @@ module.exports = function generator(seq, dataTypes) {
           order: ['name'],
         }, {
           override: true,
+        });
+
+        Generator.addScope('user', {
+          include: [
+            {
+              association: assoc.user,
+              attributes: ['name', 'email', 'fullName'],
+            },
+          ],
+        });
+
+        Generator.addScope('collectors', {
+          include: [
+            {
+              association: assoc.collectors,
+              attributes: [
+                'id',
+                'name',
+                'registered',
+                'status',
+                'isDeleted',
+                'createdAt',
+                'updatedAt',
+              ],
+            },
+          ],
         });
       },
 
@@ -319,7 +369,7 @@ module.exports = function generator(seq, dataTypes) {
         return new seq.Promise((resolve, reject) =>
          sgUtils.validateCollectors(seq, requestBody.collectors,
             whereClauseForNameInArr)
-          .then((_collectors) => {
+          .then((_collectors) => { // collectors list in request body
             collectors = _collectors;
             return this.update(requestBody);
           })
@@ -366,5 +416,6 @@ module.exports = function generator(seq, dataTypes) {
     },
     paranoid: true,
   });
+
   return Generator;
 };

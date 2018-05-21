@@ -17,6 +17,7 @@ module.exports = {
     CREATED: 201,
     NO_CONTENT: 204,
     REDIRECT: 301,
+    FOUND: 302,
     BAD_REQUEST: 400,
     UNAUTHORIZED: 401,
     FORBIDDEN: 403,
@@ -39,6 +40,7 @@ module.exports = {
   POSTGRES_UUID_RE:
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
   QUERY_PARAM_REPLACE_ALL_REGEX: /\*/g,
+  BASE_SCOPE: 'baseScope',
   SEQ_DEFAULT_SCOPE: 'defaultScope',
   SEQ_DESC: 'DESC',
   SEQ_LIKE: '$iLike',

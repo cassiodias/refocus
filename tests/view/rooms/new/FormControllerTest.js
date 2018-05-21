@@ -26,12 +26,12 @@ describe('tests/view/rooms/new/FormController.js, Create Room =>', () => {
     const params = app.getPathVariables('http://refocus/rooms/new/');
     const output = {
       name: '',
-      type: '',
-      active: false,
+      roomType: '',
+      active: true,
       externalId: '',
       settings: {},
       bots: []
-    }
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 
@@ -39,25 +39,27 @@ describe('tests/view/rooms/new/FormController.js, Create Room =>', () => {
     const params = app.getPathVariables('http://refocus/rooms/new/?name=test');
     const output = {
       name: 'test',
-      type: '',
-      active: false,
+      roomType: '',
+      active: true,
       externalId: '',
       settings: {},
       bots: []
-    }
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 
   it('Ok, Get name from path', () => {
-    const params = app.getPathVariables('http://refocus/rooms/new/test/?name=test1');
+    const params = app.getPathVariables(
+      'http://refocus/rooms/new/test/?name=test1'
+    );
     const output = {
       name: 'test',
-      type: '',
-      active: false,
+      roomType: '',
+      active: true,
       externalId: '',
       settings: {},
       bots: []
-    }
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 
@@ -65,25 +67,25 @@ describe('tests/view/rooms/new/FormController.js, Create Room =>', () => {
     const params = app.getPathVariables('http://refocus/rooms/new/?roomType=roomTypeId');
     const output = {
       name: '',
-      type: 'roomTypeId',
-      active: false,
-      externalId: '',
-      settings: {},
-      bots: []
-    }
-    expect(_.isEqual(params, output)).to.equal(true);
-  });
-
-   it('Ok, Get active from parameters', () => {
-    const params = app.getPathVariables('http://refocus/rooms/new/?active=true');
-    const output = {
-      name: '',
-      type: '',
+      roomType: 'roomTypeId',
       active: true,
       externalId: '',
       settings: {},
       bots: []
-    }
+    };
+    expect(_.isEqual(params, output)).to.equal(true);
+  });
+
+   it('Ok, Get active from parameters', () => {
+    const params = app.getPathVariables('http://refocus/rooms/new/?active=false');
+    const output = {
+      name: '',
+      roomType: '',
+      active: false,
+      externalId: '',
+      settings: {},
+      bots: []
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 
@@ -91,12 +93,12 @@ describe('tests/view/rooms/new/FormController.js, Create Room =>', () => {
     const params = app.getPathVariables('http://refocus/rooms/new/?externalId=00000');
     const output = {
       name: '',
-      type: '',
-      active: false,
+      roomType: '',
+      active: true,
       externalId: '00000',
       settings: {},
       bots: []
-    }
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 
@@ -104,12 +106,12 @@ describe('tests/view/rooms/new/FormController.js, Create Room =>', () => {
     const params = app.getPathVariables('http://refocus/rooms/new/?settings={"test":"test"}');
     const output = {
       name: '',
-      type: '',
-      active: false,
+      roomType: '',
+      active: true,
       externalId: '',
       settings: { "test":"test" },
       bots: []
-    }
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 
@@ -117,12 +119,12 @@ describe('tests/view/rooms/new/FormController.js, Create Room =>', () => {
     const params = app.getPathVariables('http://refocus/rooms/new/?settings={test:"test"}');
     const output = {
       name: '',
-      type: '',
-      active: false,
+      roomType: '',
+      active: true,
       externalId: '',
       settings: {},
       bots: []
-    }
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 
@@ -130,12 +132,12 @@ describe('tests/view/rooms/new/FormController.js, Create Room =>', () => {
     const params = app.getPathVariables('http://refocus/rooms/new/?bots=Bot1,Bot2');
     const output = {
       name: '',
-      type: '',
-      active: false,
+      roomType: '',
+      active: true,
       externalId: '',
       settings: {},
       bots: ['Bot1', 'Bot2']
-    }
+    };
     expect(_.isEqual(params, output)).to.equal(true);
   });
 

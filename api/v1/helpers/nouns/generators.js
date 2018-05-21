@@ -33,6 +33,10 @@ module.exports = {
   },
   fieldsWithArrayType: ['tags'],
   tagFilterName: 'tags',
+  fieldScopeMap: {
+    user: 'user',
+    collectors: 'collectors',
+  },
 
   /*
    * list the fields containing an array of objects to be sorted here. The value
@@ -41,5 +45,6 @@ module.exports = {
   sortArrayObjects: {
     collectors: 'name',
   },
+  readOnlyFields: ['id', 'isDeleted', 'currentCollector'],
 
 }; // exports

@@ -19,10 +19,10 @@ const doGet = require('../helpers/verbs/doGet');
 const doGetWriters = require('../helpers/verbs/doGetWriters');
 const u = require('../helpers/verbs/utils');
 const heartbeatUtils = require('../helpers/verbs/heartbeatUtils');
-const featureToggles = require('feature-toggles');
 const constants = require('../constants');
 const Aspect = require('../helpers/nouns/aspects').model;
 const apiErrors = require('../apiErrors');
+const apiUtils = require('./utils');
 
 /**
  * Validate that user has write permissions on given aspects.
@@ -147,6 +147,7 @@ module.exports = {
    * @param {Function} next - The next middleware function in the stack
    */
   patchGenerator(req, res, next) {
+    apiUtils.noReadOnlyFieldsInReq(req, helper.readOnlyFields);
     const resultObj = { reqStartTime: req.timestamp };
     const requestBody = req.swagger.params.queryBody.value;
     let oldCollectors;
@@ -176,20 +177,16 @@ module.exports = {
    * @param {Function} next - The next middleware function in the stack
    */
   postGenerator(req, res, next) {
+    apiUtils.noReadOnlyFieldsInReq(req, helper.readOnlyFields);
     const resultObj = { reqStartTime: req.timestamp };
     const params = req.swagger.params;
     u.mergeDuplicateArrayElements(params.queryBody.value, helper);
     const toPost = params.queryBody.value;
-
-    if (featureToggles.isFeatureEnabled('returnUser')) {
-      toPost.createdBy = req.user.id;
-    }
-
+    toPost.createdBy = req.user.id;
     validateGeneratorAspectsPermissions(toPost.aspects, req)
     .then(() =>
       helper.model.createWithCollectors(toPost, u.whereClauseForNameInArr))
-    .then((o) =>
-      featureToggles.isFeatureEnabled('returnUser') ? o.reload() : o)
+    .then((o) => o.reload())
     .then((o) => {
       resultObj.dbTime = new Date() - resultObj.reqStartTime;
       const oldCollectors = [];
@@ -213,6 +210,7 @@ module.exports = {
    * @param {Function} next - The next middleware function in the stack
    */
   putGenerator(req, res, next) {
+    apiUtils.noReadOnlyFieldsInReq(req, helper.readOnlyFields);
     const resultObj = { reqStartTime: req.timestamp };
     const toPut = req.swagger.params.queryBody.value;
     const puttableFields =

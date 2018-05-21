@@ -35,6 +35,11 @@ module.exports = {
       inactiveCount: 0,
       workTimeMillis: 0,
     },
+    pubStats: {
+      activity: 'pubStats',
+      key: 'None',
+      count: 0,
+    },
     queueStats: {
       activity: 'queueStats',
       averageQueueTimeMillis: 0,
@@ -51,6 +56,13 @@ module.exports = {
       token: 'None',
       totalTime: 'None',
       user: 'None',
+    },
+    unauthorized: {
+      activity: 'unauthorized',
+      ipAddress: 'None',
+      method: 'None',
+      request_id: 'None',
+      uri: 'None',
     },
     worker: {
       activity: 'worker',
