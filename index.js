@@ -60,11 +60,12 @@ function start(clusterProcessId = 0) { // eslint-disable-line max-statements
   const ENCODING = 'utf8';
   const compress = require('compression');
   const cors = require('cors');
+  const etag = require('etag');
 
   // set up server side socket.io and redis publisher
   const express = require('express');
   const enforcesSSL = require('express-enforces-ssl');
-
+  
   const app = express();
 
   /*
@@ -175,29 +176,23 @@ function start(clusterProcessId = 0) { // eslint-disable-line max-statements
       next();
     });
 
-    function etag(stat) {
+    function generateETagContent(stat) {
       const rounded = 1000;
       const radix = 16;
-      return `"cdc--${Math.ceil(stat.mtime / rounded).toString(radix)}-
-      ${Number(stat.size).toString(radix)}"`;
+      return `"sf--${Math.ceil(+stat.mtime / rounded).toString(radix)}-${Number(stat.size).toString(radix)}"`;
     }
 
-    const optionsForStaticFolder = {
+    const staticOptions = {
       etag: true,
       setHeaders(res, path, stat) {
-        if (path.includes('rooms/app.js')) {
-          res.set('x-timestamp', Date.now());
-          res.set('ETag', etag(stat));
+        res.set('ETag', etag(generateETagContent(stat)));
 
-          // give me the latest copy unless I already have the latest copy.
-          res.set('Cache-Control', 'public, max-age=0');
-        }
+        // give me the latest copy unless I already have the latest copy.
+        res.set('Cache-Control', 'public, max-age=0');
       },
     };
 
-    app.set('etag', 'strong');
-    app.use('/static', express.static(path.join(__dirname, 'public'),
-        optionsForStaticFolder));
+    app.use('/static', express.static(path.join(__dirname, 'public'), staticOptions));
 
     // Set the X-XSS-Protection HTTP header as a basic protection against XSS
     app.use(helmet.xssFilter());
